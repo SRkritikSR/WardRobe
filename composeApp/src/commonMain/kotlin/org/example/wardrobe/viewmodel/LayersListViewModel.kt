@@ -4,11 +4,19 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import org.example.wardrobe.model.CategoryItem
+import org.example.wardrobe.model.CombinationRequest
 import org.example.wardrobe.model.Layer
+import org.example.wardrobe.repository.ItemRepository
 
-class LayersListViewModel(): ViewModel() {
+class LayersListViewModel(
+    private val itemRepository: ItemRepository
+): ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState : StateFlow<UiState> = _uiState
     // List of layers
@@ -20,6 +28,9 @@ class LayersListViewModel(): ViewModel() {
         Layer("Shoes", 0.1f, false)
     )
     val layers = _layers
+    init {
+        initOutfit()
+    }
 
     private val _selectedItemIndices = mutableStateMapOf<String, Int>()
     val selectedItemIndices = _selectedItemIndices
@@ -70,5 +81,27 @@ class LayersListViewModel(): ViewModel() {
     fun dismissControls(index: Int) {
         _layerControlsVisibility[index] = false
     }
+    fun createRequest() : CombinationRequest {
+        return CombinationRequest(
+            userId = "",
+            data = listOf()
+        )
+    }
+    fun initOutfit() {
+        _uiState.value = UiState.Loading
+        val body = Json.encodeToString(createRequest())
+        viewModelScope.launch {
+            try {
+                val data = itemRepository.getOutfitScoresFromServer(body)
+                println("outfit scores fetched: $data")
+                _uiState.value = UiState.Success(data)
+            }
+            catch (e: Exception) {
+                println("Error fetching outfit scores: ${e.message}")
+                _uiState.value = UiState.Error(e.message ?:"Error fetching outfit scores")
+            }
+        }
 
+    }
 }
+

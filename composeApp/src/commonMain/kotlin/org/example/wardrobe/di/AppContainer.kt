@@ -1,6 +1,8 @@
 // AppContainer.kt
 package org.example.wardrobe.di
 
+import io.ktor.client.HttpClient
+import org.example.wardrobe.repository.FakeItems
 import org.example.wardrobe.repository.ItemRepository
 import org.example.wardrobe.repository.ItemRepositoryImpl
 import org.example.wardrobe.viewmodel.ItemsListViewModel
@@ -9,6 +11,7 @@ import org.example.wardrobe.viewmodel.ThemeViewModel
 
 // Interface for dependency abstraction
 interface AppContainer {
+
     val itemRepository: ItemRepository
     val layersListViewModel: LayersListViewModel
     val themeViewModel: ThemeViewModel
@@ -16,11 +19,19 @@ interface AppContainer {
 }
 
 // Implementation of the container
-class DefaultAppContainer : AppContainer {
-    override val itemRepository: ItemRepository = ItemRepositoryImpl()
+class DefaultAppContainer(
+    private val httpClient: HttpClient
+    ) : AppContainer {
+    private val fakeItems = FakeItems()
+    override val itemRepository: ItemRepository = ItemRepositoryImpl(
+        fakeItems,
+        httpClient
+    )
 
     override val layersListViewModel by lazy {
-        LayersListViewModel()
+        LayersListViewModel(
+            itemRepository
+        )
     }
 
     override val themeViewModel by lazy {
