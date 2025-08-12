@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="40dp"
+    android:viewportWidth="120"
+    android:viewportHeight="40">
+
+    <!-- Belt base -->
+    <rect
+        android:fillColor="#8B4513"
+        android:x="0"
+        android:y="14"
+        android:width="100"
+        android:height="12"
+        android:rx="3" />
+
+    <!-- Buckle -->
+    <rect
+        android:fillColor="#000000"
+        android:strokeColor="#808080"
+        android:strokeWidth="1"
+        android:x="100"
+        android:y="12"
+        android:width="18"
+        android:height="16"
+        android:rx="2" />
+
+    <!-- Belt holes (centered vertically on belt) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M30,20a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M40,20a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M50,20a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+</vector>
