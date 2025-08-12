@@ -19,6 +19,9 @@ class LayersListViewModel(
 ): ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState : StateFlow<UiState> = _uiState
+
+    private val _outfits : MutableStateFlow<List<CategoryItem>> = MutableStateFlow(emptyList())
+    val outfits : StateFlow<List<CategoryItem>>get() = _outfits
     // List of layers
     private val _layers = mutableStateListOf(
 //        Layer("Hats", 0.0f, false),
@@ -49,6 +52,11 @@ class LayersListViewModel(
     // Item counter if needed for other logic
     var itemCount = mutableStateOf(1)
         private set
+
+    fun loadAllOutfits() = viewModelScope.launch {
+        val fetchedItems = itemRepository.getAllItems()
+        _outfits.value = fetchedItems
+    }
 
     fun selectItem (layerName: String, index: Int) {
         println("The index is given by $index")

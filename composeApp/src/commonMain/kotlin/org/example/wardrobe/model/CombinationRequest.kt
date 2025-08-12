@@ -10,10 +10,6 @@ data class CombinationRequest(
 @Serializable
 data class CategoryItem(
     val category: String,
-    val items: List<DItem>
+    val items: List<Item>
 )
 
-@Serializable
-data class DItem(
-    val url: String
-)

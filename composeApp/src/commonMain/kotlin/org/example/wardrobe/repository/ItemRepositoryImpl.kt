@@ -7,6 +7,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import org.example.wardrobe.database.OutfitCombination
 import org.example.wardrobe.database.OutfitDao
+import org.example.wardrobe.model.CategoryItem
 import org.example.wardrobe.model.CombinationResponse
 import org.example.wardrobe.model.Item
 import org.example.wardrobe.network.HttpClientProvider.client
@@ -19,16 +20,17 @@ class ItemRepositoryImpl(
 
     override suspend fun getItems(categoryKey: String?): List<Item> {
         return when (categoryKey?.lowercase()) {
-            "hats" -> fakeItems.getHats()
+//            "hats" -> fakeItems.getHats()
             "shirts" -> fakeItems.getShirts()
-            "belts" -> fakeItems.getBelts()
+//            "belts" -> fakeItems.getBelts()
             "bottoms" -> fakeItems.getBottoms()
             "shoes" -> fakeItems.getShoes()
             else -> emptyList()
         }
     }
 
-    override suspend fun getAllItems(): Map<String, List<Item>> {
+    override suspend fun getAllItems(): List<CategoryItem> {
+        // get all images loaded
         return fakeItems.getAllItems()
     }
 

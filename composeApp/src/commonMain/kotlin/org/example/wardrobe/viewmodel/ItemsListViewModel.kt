@@ -15,9 +15,6 @@ class ItemsListViewModel(
     private val repository: ItemRepository
 ): ViewModel() {
 
-    // use view model scope to fetch the data
-    private val _outfits : MutableStateFlow<Map<String, List<Item>>> = MutableStateFlow(emptyMap())
-    val outfits : StateFlow<Map<String, List<Item>>>get() = _outfits
 
     var showItemSelection by mutableStateOf(false)
         private set
@@ -31,16 +28,8 @@ class ItemsListViewModel(
 
     }
 
-    fun loadAllOutfits() = viewModelScope.launch {
-        val fetchedItems = repository.getAllItems()
-        _outfits.value = fetchedItems
-    }
-
     fun toggleItemSelections(index: Int)  {
             showItemSelection = true
     }
 
-    init {
-        loadAllOutfits()
-    }
 }
