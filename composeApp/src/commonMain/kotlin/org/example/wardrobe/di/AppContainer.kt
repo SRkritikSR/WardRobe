@@ -1,6 +1,7 @@
 // AppContainer.kt
 package org.example.wardrobe.di
 
+import Factory
 import io.ktor.client.HttpClient
 import org.example.wardrobe.repository.FakeItems
 import org.example.wardrobe.repository.ItemRepository
@@ -20,12 +21,14 @@ interface AppContainer {
 
 // Implementation of the container
 class DefaultAppContainer(
+    private val factory : Factory,
     private val httpClient: HttpClient
     ) : AppContainer {
     private val fakeItems = FakeItems()
     override val itemRepository: ItemRepository = ItemRepositoryImpl(
         fakeItems,
-        httpClient
+        httpClient,
+        factory.getAppDatabase().outfitDao()
     )
 
     override val layersListViewModel by lazy {

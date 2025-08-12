@@ -1,5 +1,6 @@
 package org.example.wardrobe
 
+import Factory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,8 +14,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        val factory = Factory(application)
         val httpClient = HttpClientProvider.client
         val appContainer = DefaultAppContainer(
+            factory,
             httpClient
         )
         setContent {
@@ -23,8 +26,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
-}
+//@Preview
+//@Composable
+//fun AppAndroidPreview() {
+//    App()
+//}

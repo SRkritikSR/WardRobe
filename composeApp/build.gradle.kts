@@ -1,14 +1,20 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.room)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -28,13 +34,29 @@ kotlin {
     }
     
 
-    
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        // create a new group that
+        // depends on `common`
+        common {
+            // Define group name without
+            // `Main` as suffix
+            group("nonJs") {
+                // Provide which targets would
+                // be part of this group
+                withAndroidTarget()
+                withIos()
+                withJvm()
+            }
+        }
+    }
     sourceSets {
         
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.ktor.client.android)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -48,12 +70,18 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor2)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.bundles.ktor)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
+
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
         jvmMain.dependencies {
-            implementation(libs.ktor.client.java)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.swing)
         }
         commonTest.dependencies {
@@ -88,8 +116,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 dependencies {
     debugImplementation(compose.uiTooling)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+
 }
 
