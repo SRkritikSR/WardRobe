@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.example.wardrobe.model.CategoryItem
 import org.example.wardrobe.model.CombinationRequest
+import org.example.wardrobe.model.Item
 import org.example.wardrobe.model.Layer
 import org.example.wardrobe.repository.ItemRepository
 
@@ -53,9 +54,14 @@ class LayersListViewModel(
     var itemCount = mutableStateOf(1)
         private set
 
+
     fun loadAllOutfits() = viewModelScope.launch {
         val fetchedItems = itemRepository.getAllItems()
         _outfits.value = fetchedItems
+    }
+
+    fun getCategoryOutfit(layerName: String) : List<Item> {
+        return outfits.value.find { it.category == layerName }?.items ?: emptyList()
     }
 
     fun selectItem (layerName: String, index: Int) {
