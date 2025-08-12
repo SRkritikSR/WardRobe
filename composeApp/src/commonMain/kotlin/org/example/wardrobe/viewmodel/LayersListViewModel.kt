@@ -4,9 +4,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.example.wardrobe.model.Layer
 
 class LayersListViewModel(): ViewModel() {
+    private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
+    val uiState : StateFlow<UiState> = _uiState
     // List of layers
     private val _layers = mutableStateListOf(
 //        Layer("Hats", 0.0f, false),

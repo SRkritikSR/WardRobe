@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import org.example.wardrobe.viewmodel.ItemsListViewModel
 import org.example.wardrobe.viewmodel.LayersListViewModel
 import org.example.wardrobe.viewmodel.ThemeViewModel
+import org.example.wardrobe.viewmodel.UiState
 
 @Composable
 fun HomeScreen(
@@ -43,6 +44,7 @@ fun HomeScreenContent(
     itemsListViewModel: ItemsListViewModel,
     onThemeChange: () -> Unit
 ) {
+    val uiState by layersListViewModel.uiState.collectAsState()
     val colorScheme = MaterialTheme.colorScheme
     val haptic = LocalHapticFeedback.current
     val gradient = Brush.verticalGradient(
@@ -51,7 +53,6 @@ fun HomeScreenContent(
             colorScheme.surface
         )
     )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -113,10 +114,25 @@ fun HomeScreenContent(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
-                    LayersListScreen(
-                        layersListViewModel = layersListViewModel,
-                        itemsListViewModel = itemsListViewModel,
-                    )
+                    when (uiState) {
+                        is UiState.Loading -> {
+                            Text("Fetching data...")
+                        }
+                        is UiState.Success<*> -> {
+                            LayersListScreen(
+                                layersListViewModel = layersListViewModel,
+                                itemsListViewModel = itemsListViewModel,
+                            )
+                        }
+                        is UiState.Error -> {
+                            Text("Some Error")
+                        }
+                        is UiState.Idle -> {
+
+                        }
+                    }
+
+
                 }
             }
         )
