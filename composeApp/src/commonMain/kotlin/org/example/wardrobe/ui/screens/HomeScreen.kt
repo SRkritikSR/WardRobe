@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import org.example.wardrobe.viewmodel.ItemsListViewModel
 import org.example.wardrobe.viewmodel.LayersListViewModel
 import org.example.wardrobe.viewmodel.ThemeViewModel
-import org.example.wardrobe.viewmodel.UiState
+import org.example.wardrobe.ui.state.UiState
 
 @Composable
 fun HomeScreen(
@@ -53,6 +53,7 @@ fun HomeScreenContent(
             colorScheme.surface
         )
     )
+    print("UI State: $uiState")
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -107,7 +108,7 @@ fun HomeScreenContent(
                           }
                       )
             },
-            floatingActionButtonPosition = FabPosition.Start,
+            floatingActionButtonPosition = FabPosition.Center,
             content = { padding ->
                 Box(
                     modifier = Modifier
@@ -125,7 +126,7 @@ fun HomeScreenContent(
                             )
                         }
                         is UiState.Error -> {
-                            Text("Some Error")
+                            Text("We are sorry we encountered an error.")
                         }
                         is UiState.Idle -> {
 

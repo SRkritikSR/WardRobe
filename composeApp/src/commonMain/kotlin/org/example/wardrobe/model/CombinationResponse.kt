@@ -1,10 +1,32 @@
-package org.example.wardrobe.model
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
-import kotlinx.serialization.json.Json
+@Serializable
+data class  CombinationResponse(
+    val data: List<CombinationResult>,
+    val meta: Meta
+)
 
-data class CombinationResponse(
-    val data: Json
-//    val combinationId: String,
-//    val score: Double,
-//    val itemsId: List<String>
+@Serializable
+data class CombinationResult(
+    val indexes: Indexes,
+    val scores: Score
+)
+
+@Serializable
+data class Indexes(
+    val topIndex: Int,
+    val bottomIndex: Int,
+    val footwearIndex: Int
+)
+
+@Serializable
+data class Score(
+    val avgEmbedding: Double
+)
+
+@Serializable
+data class Meta(
+    val totalCombination: Int,
+    val promptUsed: String
 )

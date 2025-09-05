@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CombinationRequest(
-    val userId: String,
+    val userId: String?,
     val data: List<CategoryItem>
 )
 @Serializable

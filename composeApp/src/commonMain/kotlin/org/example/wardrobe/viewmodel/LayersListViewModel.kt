@@ -9,11 +9,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.example.wardrobe.config.Constants
+import org.example.wardrobe.database.OutfitCombination
 import org.example.wardrobe.model.CategoryItem
 import org.example.wardrobe.model.CombinationRequest
 import org.example.wardrobe.model.Item
 import org.example.wardrobe.model.Layer
+import org.example.wardrobe.network.ApiResult
 import org.example.wardrobe.repository.ItemRepository
+import org.example.wardrobe.ui.state.UiState
+import org.example.wardrobe.ui.state.UiState.*
 
 class LayersListViewModel(
     private val itemRepository: ItemRepository
@@ -32,10 +37,10 @@ class LayersListViewModel(
         Layer("Shoes", 0.1f, false)
     )
     val layers = _layers
+
     init {
         initOutfit()
     }
-
     private val _selectedItemIndices = mutableStateMapOf<String, Int>()
     val selectedItemIndices = _selectedItemIndices
 
@@ -83,7 +88,7 @@ class LayersListViewModel(
     fun disableLayer( index: Int ) {
         _layers[index].isDisabled = true
     }
-
+// To deselect a layer the index value is -1
     fun selectLayer(index: Int) {
         _selectedLayerIndex.value = index
     }
@@ -97,25 +102,41 @@ class LayersListViewModel(
     }
     fun createRequest() : CombinationRequest {
         return CombinationRequest(
-            userId = "",
-            data = listOf()
+            userId = Constants.TEST_USER_ID,
+            data = outfits.value
         )
     }
     fun initOutfit() {
         _uiState.value = UiState.Loading
-        val body = Json.encodeToString(createRequest())
+
         viewModelScope.launch {
-            try {
-                val data = itemRepository.getOutfitScoresFromServer(body)
-                println("outfit scores fetched: $data")
-                _uiState.value = UiState.Success(data)
+            when (val result = itemRepository.getOutfitScoresFromServer("")){
+                is ApiResult.Success -> {
+                    _uiState.value = Success(result.data)
+                }
+                is ApiResult.NetworkError -> {
+                    _uiState.value = Error("No internet connection. Please try again.")
+                }
+                is ApiResult.Error -> {
+                    _uiState.value = Error(result.message)
+                }
+
             }
-            catch (e: Exception) {
-                println("Error fetching outfit scores: ${e.message}")
-                _uiState.value = UiState.Error(e.message ?:"Error fetching outfit scores")
-            }
+
+
         }
+//        val body = Json.encodeToString(createRequest())
+//        viewModelScope.launch {
+//            try {
+//                val data = itemRepository.getOutfitScores(body)
+//                println("outfit scores fetched: $data")
+//                _uiState.value = UiState.Success(data)
+//            }
+//            catch (e: Exception) {
+//                println("Error fetching outfit scores: ${e.message}")
+//                _uiState.value = UiState.Error(e.message ?:"Error fetching outfit scores")
+//            }
+//        }
 
     }
-}
-
+    }

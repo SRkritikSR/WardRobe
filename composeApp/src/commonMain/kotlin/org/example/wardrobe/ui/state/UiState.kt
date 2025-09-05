@@ -1,6 +1,4 @@
-package org.example.wardrobe.viewmodel
-
-
+package org.example.wardrobe.ui.state
 
 sealed class UiState {
     object Idle: UiState()

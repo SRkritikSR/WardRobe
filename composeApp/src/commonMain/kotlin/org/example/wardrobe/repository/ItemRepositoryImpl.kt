@@ -1,20 +1,23 @@
 package org.example.wardrobe.repository
 
+import CombinationResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import kotlinx.io.IOException
+import org.example.wardrobe.config.Constants
 import org.example.wardrobe.database.OutfitCombination
 import org.example.wardrobe.database.OutfitDao
 import org.example.wardrobe.model.CategoryItem
-import org.example.wardrobe.model.CombinationResponse
 import org.example.wardrobe.model.Item
-import org.example.wardrobe.network.HttpClientProvider.client
+import org.example.wardrobe.network.ApiResult
+import org.example.wardrobe.network.api.OutfitApi
 
 class ItemRepositoryImpl(
     private val fakeItems: FakeItems,
-    private val httpClient: HttpClient,
+    private val outfitApi: OutfitApi,
     private val outfitDao: OutfitDao
 ) : ItemRepository {
 
@@ -40,19 +43,19 @@ class ItemRepositoryImpl(
         val result = outfitDao.getAll()
         print("Data en database: $result")
         return result
+
     }
 
 
-    override suspend fun getOutfitScoresFromServer(body: String): CombinationResponse {
-        val response: HttpResponse =
-            client.post("https://a66defd93318.ngrok-free.app/init_outfit") {
-            setBody(body)
+    override suspend fun getOutfitScoresFromServer(body: String): ApiResult<CombinationResponse> {
+        return try {
+            ApiResult.Success(outfitApi.getOutfitScores(body))
+        } catch (e: IOException) {
+            print("API Result $e")
+            ApiResult.NetworkError
+        } catch (e: Exception) {
+            print("API Result $e")
+            ApiResult.Error(e.message ?: "Unknown error")
         }
-        if (response.status.value == 400) {
-            return CombinationResponse(
-                response.body()
-            )
-        }
-        return CombinationResponse(response.body())
     }
 }
